@@ -1,17 +1,17 @@
-import React, { Component } from "react";
-import FaceRecognition from "./components/FaceRecognition/FaceRecognition.js";
-import Navigation from "./components/Navigation/Navigation.js";
-import Logo from "./components/Logo/Logo.js";
-import ImageLinkForm from "./components/ImageLinkForm/ImageLinkForm.js";
-import Rank from "./components/Rank/Rank.js";
-import Signin from "./components/Signin/Signin.js";
-import Register from "./components/Register/Register.js";
-import Particles from "react-particles-js";
-import Clarifai from "clarifai";
-import "./App.css";
+import React, { Component } from 'react';
+import FaceRecognition from './components/FaceRecognition/FaceRecognition.js';
+import Navigation from './components/Navigation/Navigation.js';
+import Logo from './components/Logo/Logo.js';
+import ImageLinkForm from './components/ImageLinkForm/ImageLinkForm.js';
+import Rank from './components/Rank/Rank.js';
+import Signin from './components/Signin/Signin.js';
+import Register from './components/Register/Register.js';
+import Particles from 'react-particles-js';
+import Clarifai from 'clarifai';
+import './App.css';
 
 const app = new Clarifai.App({
-  apiKey: "d69c8ac00f584f2fb793701312d4c5f7"
+  apiKey: 'd69c8ac00f584f2fb793701312d4c5f7'
 });
 
 const particlesOptions = {
@@ -104,27 +104,29 @@ class App extends Component {
           .then(count => {
             this.setState(Object.assign(this.state.user, {entries: count}))
           })
+          .catch(console.log)
         }
         this.displayFaceBox(this.calculateFaceLocation(response))
       })
       .catch(err => console.log(err));
   }
 
-
-
   onRouteChange = route => {
+    console.log(route);
     this.setState({route: route})
-    route === 'home'
-    ? this.setState({isSignedIn: true})
-    : this.setState({isSignedIn: false})
+    if (route === 'signout') {
+      this.setState(initialState)
+    } else if (route === 'home') {
+      this.setState({isSignedIn: true})
+    }
   }
 
   render() {
-    const { route, isSignedIn, box, imageUrl } = this.state;
+    const { route, isSignedIn, box, imageUrl, user } = this.state;
     const { onRouteChange, onInputChange, onImageSubmit, loadUser } = this;
     return (
-      <div className="App">
-        <Particles className="particles"
+      <div className='App'>
+        <Particles className='particles'
         params={particlesOptions} 
         />
         <Navigation isSignedIn={isSignedIn} onRouteChange={onRouteChange}/>
@@ -132,8 +134,8 @@ class App extends Component {
         ? <div>
             <Logo />
             <Rank 
-            name={this.state.user.name} 
-            entries={this.state.user.entries} />
+            name={user.name} 
+            entries={user.entries} />
             <ImageLinkForm
               onInputChange={onInputChange}
               onImageSubmit={onImageSubmit}
