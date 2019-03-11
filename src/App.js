@@ -7,12 +7,7 @@ import Rank from './components/Rank/Rank.js';
 import Signin from './components/Signin/Signin.js';
 import Register from './components/Register/Register.js';
 import Particles from 'react-particles-js';
-import Clarifai from 'clarifai';
 import './App.css';
-
-const app = new Clarifai.App({
-  apiKey: 'd69c8ac00f584f2fb793701312d4c5f7'
-});
 
 const particlesOptions = {
   particles: {
@@ -58,12 +53,6 @@ class App extends Component {
     })
   }
 
-  // componentDidMount() {
-  //   fetch('http://localhost:3000/')
-  //     .then(response => response.json())
-  //     .then(console.log)
-  // }
-
   calculateFaceLocation = (data) => {
     const clarifaiFace = data.outputs[0].data.regions[0].region_info.bounding_box;
     const image = document.getElementById('inputimage');
@@ -86,33 +75,36 @@ class App extends Component {
   }
 
   onImageSubmit = () => {
-    this.setState({ imageUrl: this.state.input });
-    app.models
-      .predict(
-        Clarifai.FACE_DETECT_MODEL, 
-        this.state.input)
-      .then(response => {
-        if (response) {
-          fetch('http://localhost:3001/image', {
-            method: 'put',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({
-              id: this.state.user.id
-            })
-          })
-          .then(response => response.json())
-          .then(count => {
-            this.setState(Object.assign(this.state.user, {entries: count}))
-          })
-          .catch(console.log)
-        }
-        this.displayFaceBox(this.calculateFaceLocation(response))
+    this.setState({imageUrl: this.state.input});
+    fetch('http://localhost:3001/imageurl', {
+      method: 'post',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        input: this.state.input
       })
-      .catch(err => console.log(err));
+    })
+    .then(response => response.json())
+    .then(response => {
+      if (response) {
+        fetch('http://localhost:3001/image', {
+          method: 'put',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({
+            id: this.state.user.id
+          })
+        })
+        .then(response => response.json())
+        .then(count => {
+          this.setState(Object.assign(this.state.user, {entries: count}))
+        })
+        .catch(console.log)
+      }
+      this.displayFaceBox(this.calculateFaceLocation(response))
+    })
+    .catch(err => console.log(err));
   }
 
   onRouteChange = route => {
-    console.log(route);
     this.setState({route: route})
     if (route === 'signout') {
       this.setState(initialState)
