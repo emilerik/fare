@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import FaceRecognition from './components/FaceRecognition/FaceRecognition.js';
 import Navigation from './components/Navigation/Navigation.js';
-import Logo from './components/Logo/Logo.js';
+//import Logo from './components/Logo/Logo.js';
 import ImageLinkForm from './components/ImageLinkForm/ImageLinkForm.js';
 import Rank from './components/Rank/Rank.js';
 import Signin from './components/Signin/Signin.js';
@@ -53,6 +53,7 @@ class App extends Component {
     })
   }
 
+  // Potential improvement: Find all the faces in an image
   calculateFaceLocation = (data) => {
     const clarifaiFace = data.outputs[0].data.regions[0].region_info.bounding_box;
     const image = document.getElementById('inputimage');
@@ -85,8 +86,7 @@ class App extends Component {
     })
     .then(response => response.json())
     .then(response => {
-      if (response) {
-        console.log(response);
+      if (response.outputs[0].data.regions) {  //Checks if face any face was detected
         fetch('https://pacific-retreat-28538.herokuapp.com/image', {
           method: 'put',
           headers: {'Content-Type': 'application/json'},
@@ -99,8 +99,10 @@ class App extends Component {
           this.setState(Object.assign(this.state.user, {entries: count}))
         })
         .catch(console.log)
+        this.displayFaceBox(this.calculateFaceLocation(response))
+      } else {
+        this.setState({box: {}})
       }
-      this.displayFaceBox(this.calculateFaceLocation(response))
     })
     .catch(err => console.log(err));
   }
