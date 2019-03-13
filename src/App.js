@@ -86,6 +86,7 @@ class App extends Component {
     .then(response => response.json())
     .then(response => {
       if (response) {
+        console.log(response);
         fetch('https://pacific-retreat-28538.herokuapp.com/image', {
           method: 'put',
           headers: {'Content-Type': 'application/json'},
@@ -124,7 +125,7 @@ class App extends Component {
         <Navigation isSignedIn={isSignedIn} onRouteChange={onRouteChange}/>
         { route === 'home' 
         ? <div>
-            <Logo />
+            {/* <Logo /> */}
             <Rank 
             name={user.name} 
             entries={user.entries} />
